@@ -5,8 +5,8 @@ The implementation of TableDC, a deep clustering algorithm for data cleaning and
 
 This project comprises two major components, each addressing different data integration challenges: schema inference, entity resolution, and domain discovery:
 * For schema inference, we use [SBERT](https://www.sbert.net/docs/hugging_face.html), [FastText](https://fasttext.cc/docs/en/crawl-vectors.html), USE, and [TabTransformer](https://github.com/jrzaurin/pytorch-widedeep) to embed tables.
-* For entity resolution, we employ [EmbDi](https://gitlab.eurecom.fr/cappuzzo/embdi) and [SBERT](https://www.sbert.net/docs/hugging_face.html) to embed rows.
-* For domain discovery, we utilize T5 and [SBERT](https://www.sbert.net/docs/hugging_face.html) to embed columns.
+* For entity resolution, we employ [EmbDi](https://gitlab.eurecom.fr/cappuzzo/embdi), USE and [SBERT](https://www.sbert.net/docs/hugging_face.html) to embed rows.
+* For domain discovery, we utilize [EmbDi](https://gitlab.eurecom.fr/cappuzzo/embdi), T5, USE, [FastText](https://fasttext.cc/docs/en/crawl-vectors.html) and [SBERT](https://www.sbert.net/docs/hugging_face.html) to embed columns.
 * The generated dense embedding matrix `(X.txt)` will then serve as the input for clustering in the TableDC.
 
 ## Prerequisites
@@ -89,3 +89,68 @@ The Autoencoder (AE) in TableDC contains four main layers, with each layer's siz
 - **Loss Function:** Combination of Kullback–Leibler divergence and Mean Squared Error loss.
 - **Number of Epochs:** Please see Section 4.1.4 in the paper.
    
+### Additional domain discovery clustering results (TableDC vs. existing DC methods)
+
+<table>
+  <tr>
+    <th rowspan="2">Method</th>
+    <th colspan="4">Camera</th>
+    <th colspan="4">Monitor</th>
+  </tr>
+  <tr>
+    <th colspan="2">EmbDi</th>
+    <th colspan="2">FastText</th>
+    <th colspan="2">EmbDi</th>
+    <th colspan="2">FastText</th>
+  </tr>
+  <tr>
+    <th></th>
+    <th>ARI</th>
+    <th>ACC</th>
+    <th>ARI</th>
+    <th>ACC</th>
+    <th>ARI</th>
+    <th>ACC</th>
+    <th>ARI</th>
+    <th>ACC</th>
+  </tr>
+  <tr>
+    <td>K-means</td>
+    <td>0.13</td>	
+    <td>0.16	</td>
+   <td>0.48	</td>
+   <td>0.49	</td>
+   <td>0.06</td>
+   <td>0.13</td>
+  <td> 0.41</td>
+  <td> 0.46</td>
+  </tr>
+  <tr>
+    <td>DBSCAN</td>
+    <td>0.016</td>	<td>0.13</td>	 <td>0.01</td>	<td>0.17</td>	<td>0.002</td>	<td>0.07</td>	<td>0.01</td>	<td>0.15</td>
+  </tr>
+  <tr>
+    <td>Birch</td>
+    <td>0.03</td>	<td>0.14</td>	<td>0.22</td>	<td>0.43</td>	<td>0.04</td>	<td>0.13</td>	<td>0.25</td>	<td>0.40</td>
+  </tr>
+  <tr>
+    <td>SHGP</td>
+   <td>0.09</td>	<td>0.14</td>	<td>0.45</td>	<td>0.48</td>	<td>0.05</td>	<td>0.11</td>	<td>0.40</td>	<td>0.46</td>
+  </tr>
+  <tr>
+    <td>DFCN</td>
+    <td>0.12</td>	<td>0.15</td>	<td>0.47</td>	<td>0.47</td>	<td>N/A</td>	<td>N/A</td>	<td>N/A</td>	<td>N/A</td>
+  </tr>
+  <tr>
+    <td>EDESC</td>
+   	 <td>0.09</td>	 <td>0.16</td>	 <td>0.38</td>	 <td>0.46</td>	 <td>0.06</td>	 <td>0.12</td>	 <td>0.35</td>	 <td>0.35</td>
+  </tr>
+  <tr>
+    <td>SDCN</td>
+   	 <td>0.05</td>	 <td>0.17</td>	 <td>0.56</td>	 <td>0.54</td>	 <td>0.05</td>	 <td>0.13</td>	 <td>0.42</td>	 <td>0.46</td>
+  </tr>
+  <tr>
+    <td>TableDC</td>
+    	<td>**0.14**</td>	<td>**0.19**</td>	<td>**0.59**</td>	<td>**0.56**</td>	<td>0.06</td>	<td>0.13</td>	<td>**0.47**</td>	<td>**0.47**</td>
+  </tr>
+</table>
