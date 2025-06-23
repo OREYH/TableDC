@@ -18,8 +18,7 @@ DIRECTORY_OUTPUT = 'embdi_master/pipeline/datasets/'
 # >>>>>>>>>>>>>>>>>>>>> 1.2 Preprocessing : remove ',' into text from columns
 
 if dataset_name == 'music_brainz_20k':
-    header_lab = ['CID'] # labels
-    header_lines = ['title', 'length', 'artist', 'album', 'year', 'language'] # datas
+    header_lines = ['title', 'length', 'artist', 'album', 'year', 'language']  # data columns
 
 
 d_save = DIRECTORY_OUTPUT
@@ -31,18 +30,11 @@ for f in os.listdir(DIRECTORY_OUTPUT):
 
 # Proceeding to save preprocess files    
 for filename in os.listdir(DIRECTORY_INPUT):
-    l_save = filename.split('.csv')[0] + '_labels.csv'
-
     df = pd.read_csv(DIRECTORY_INPUT + filename, sep=',')
-    
-    datas_lab = []
+
     datas_lines = []
 
     for i in range(len(df)):
-        # Proceed labels
-        d = []
-        d.append(df[header_lab[0]][i]) ; datas_lab.append(d)
-    
         # Proceed lines
         d = []
         for col in header_lines:
@@ -50,12 +42,6 @@ for filename in os.listdir(DIRECTORY_INPUT):
         datas_lines.append(d)
 
     
-    # Save labels as csv file
-    with open(l_save, 'w', encoding='UTF8', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(header_lab)  # write the header
-        writer.writerows(datas_lab)  # write multiple rows
-
     # Save lines as csv file
     with open(d_save + filename, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
@@ -226,7 +212,6 @@ DIRECTORY_EMB = 'pipeline/embeddings/'
 
 vectors = []
 Text = []
-labels = []
 
 for filename in os.listdir(DIRECTORY_EMB): 
     if '.emb' in str(filename):
@@ -237,17 +222,7 @@ for filename in os.listdir(DIRECTORY_EMB):
                     # Get index of line int the raw dataset
                     index_line = int(line.split(' ')[0].split('__')[1])
                     
-                    # Add label
-                    df_lab = pd.read_csv(filename.split('.emb')[0] + '_labels.csv', sep=',')
-                    
-                    if dataset_name == 'music_brainz_20k':
-                        col_lab = 'CID'
-                    if dataset_name == 'north_carolina_voters_5m':
-                        col_lab = 'recid'
-                    
-                    labels.append(int(df_lab[col_lab][index_line]))
-                
-                    #print(len(set(labels)))
+
                                     
                     # Add vector
                     vectors.append(np.array([float(x) for x in line.split(' ')[1:]]))
@@ -259,75 +234,14 @@ for filename in os.listdir(DIRECTORY_EMB):
                         Text.append(lines_txt[index_line + 1]) 
 
 print('Number of records/entities: ' + str(len(vectors)))
-print('Number of labels: ' + str(len(set(labels))))
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>> 8. Deep clustering 
 
-number_instance = len(vectors) #(vectors)
+number_instance = len(vectors)
 vectors = vectors[:number_instance]
 Text = Text[:number_instance]
-labels = labels[:number_instance]
 # Transform list to array
 vectors = np.array(vectors)
-vectors1=pd.DataFrame(vectors) 
-labels=pd.DataFrame(labels) 
+vectors1=pd.DataFrame(vectors)
 vectors1.to_csv('X.txt', index=False, header = False,sep=' ')
-labels.to_csv('labels.txt', index=False, header = False,sep=' ')
-
-
-#-------------- Getting row vectors for geographicalSettelments-----------------
-
-
-# vectors = []
-# Text = []
-# labels = []
-
-# for filename in os.listdir(DIRECTORY_EMB): 
-#     if '.emb' in str(filename):
-#         with open(DIRECTORY_EMB + filename, 'r', encoding='utf-8') as fp: 
-#             lines = fp.readlines()
-#             for line in lines:
-#                 if line[:5] == 'idx__' :
-#                     # Get index of line int the raw dataset
-#                     index_line = int(line.split(' ')[0].split('__')[1])
-                    
-#                     # Add label
-#                     df_lab = pd.read_csv(filename.split('.emb')[0] + '_labels.csv', sep=',')
-                    
-#                     if dataset_name == 'geographicalSettelments':
-#                         col_lab = 'label'
-                    
-#                     labels.append(int(df_lab[col_lab][index_line]))
-                
-#                     #print(len(set(labels)))
-                                    
-#                     # Add vector
-#                     vectors.append(np.array([float(x) for x in line.split(' ')[1:]]))
-                
-#                     # Add text
-#                     with open(DIRECTORY_DATASET + filename.split('.emb')[0] + '.csv', 'r', encoding='utf-8') as ftt:
-#                         lines_txt = ftt.readlines()
-#                         # +1: because we remove header line
-#                         Text.append(lines_txt[index_line + 1]) 
-
-# print('Number of records/entities: ' + str(len(vectors)))
-# print('Number of labels: ' + str(len(set(labels))))
-
-# number_instance = len(vectors) #(vectors)
-# vectors = vectors[:number_instance]
-# Text = Text[:number_instance]
-# labels = labels[:number_instance]
-
-# # Transform list to array
-# vectors = np.array(vectors)
-# y = labels
-
-# vectors1=pd.DataFrame(vectors) 
-# y1=pd.DataFrame(y) 
-# vectors1.to_csv('X.txt', index=False, header = False,sep=' ')
-# y1.to_csv('labels.txt', index=False, header = False,sep=' ')
-
-
-
-        

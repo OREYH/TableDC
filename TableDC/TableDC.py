@@ -11,7 +11,7 @@ from torch.nn.parameter import Parameter
 from torch.optim import Adam
 from torch.nn import Linear
 from utils import load_data
-from evaluation import eva
+from evaluation import internal_metrics
 from tqdm import tqdm
 
 # set seed
@@ -112,7 +112,6 @@ def train_TableDC(dataset):
 
     # cluster parameter initiate
     data = torch.Tensor(dataset.x).to(device)
-    y = dataset.y
     with torch.no_grad():
         _, z = model.ae(data)
     
@@ -135,9 +134,9 @@ def train_TableDC(dataset):
             _, tmp_q, pred, _ = model(data)
             tmp_q = tmp_q.data
             p = target_distribution(tmp_q)     
-            res2 = pred.data.cpu().numpy().argmax(1)   
-            if epoch == 199:  
-                eva(y, res2, str(epoch))
+            res2 = pred.data.cpu().numpy().argmax(1)
+            if epoch == 199:
+                internal_metrics(dataset.x, res2)
     
         x_bar, q, pred, _ = model(data)
         
@@ -181,4 +180,4 @@ if __name__ == "__main__":
     start = time()
     train_TableDC(dataset)
     end = time()
-    print("Training took ",{end-start}," sec to run.")
+    print('Training took ', end - start, ' sec to run.')
