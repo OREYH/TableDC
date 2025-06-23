@@ -6,6 +6,7 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics.cluster import rand_score
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.metrics.cluster import normalized_mutual_info_score
+from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -202,5 +203,15 @@ def eva(y_true, y_pred, epoch=0):
     print('epoch = '+ str(epoch) + ' Number of unary clusters = ' + str(unary_clusters))
     print('epoch = '+ str(epoch) + ' Median cluster count = ' + str(statistics.median(count)))
     print('epoch = '+ str(epoch) + ' Mean cluster count = ' + str(statistics.mean(count)))
-    
+
+def internal_metrics(X, y_pred):
+    X = np.array(X)
+    y_pred = np.array(y_pred)
+    if len(np.unique(y_pred)) > 1:
+        sil = silhouette_score(X, y_pred)
+    else:
+        sil = -1
+    db = davies_bouldin_score(X, y_pred)
+    ch = calinski_harabasz_score(X, y_pred)
+    print(f'Silhouette Score: {sil:.4f}, Davies-Bouldin Index: {db:.4f}, Calinski-Harabasz Index: {ch:.4f}')
 
